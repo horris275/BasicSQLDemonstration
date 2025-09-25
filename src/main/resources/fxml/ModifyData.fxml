@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+
+<StackPane xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.github.horris275.basicsqldemonstration.ui.controllers.ModifyTabController">
+
+    <stylesheets>
+        <!-- Global CSS -->
+        <URL value="@../css/global.css"/>
+    </stylesheets>
+
+    <!-- Body -->
+    <VBox styleClass="body-container">
+        <!-- Header -->
+        <VBox styleClass="header-container">
+            <Text styleClass="header" text="Modify existing data:"/>
+        </VBox>
+        <!-- Form -->
+        <VBox styleClass="form-container">
+            <Label styleClass="form-label" text="Which identifier would you like to modify?"/>
+            <TextField fx:id="idField"/>
+            <Button text="Search" onAction="#handleSearch"/>
+            <Label styleClass="form-label" text="What title would you like?"/>
+            <TextField fx:id="titleField"/>
+            <Label styleClass="form-label" text="What description would you like?"/>
+            <TextField fx:id="descriptionField"/>
+            <Label styleClass="form-label" text="What URL would you like?"/>
+            <TextField fx:id="urlField"/>
+            <Button text="Submit" onAction="#handleSubmit"/>
+        </VBox>
+    </VBox>
+</StackPane>

@@ -1,0 +1,23 @@
+#table-container {
+    -fx-max-width: 1024;
+}
+
+#id-column {
+    -fx-min-width: 120;
+    -fx-pref-width: 120;
+}
+
+#title-column {
+    -fx-min-width: 200;
+    -fx-pref-width: 200;
+}
+
+#description-column {
+    -fx-min-width: 552;
+    -fx-pref-width: 552;
+}
+
+#url-column {
+    -fx-min-width: 150;
+    -fx-pref-width: 150;
+}
