@@ -245,8 +245,9 @@ public class SQLManager implements DynamicDatabaseService
         {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                columnNames.add(metaData.getColumnName(i));
+            for (int count = 1; count <= metaData.getColumnCount(); count++)
+            {
+                columnNames.add(metaData.getColumnName(count));
             }
         }
         catch (SQLException e)
