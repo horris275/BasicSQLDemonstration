@@ -1,6 +1,7 @@
-package com.github.horris275.basicsqldemonstration.sql;
+package com.github.horris275.basicsqldemonstration.sql.interfaces;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
+import com.github.horris275.basicsqldemonstration.sql.DatabaseRow;
 
 import java.util.List;
 import java.util.Optional;
