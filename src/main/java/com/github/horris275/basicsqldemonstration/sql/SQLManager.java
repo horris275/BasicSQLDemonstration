@@ -1,6 +1,7 @@
 package com.github.horris275.basicsqldemonstration.sql;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,14 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A concrete implementation of {@link DatabaseService} using a SQL Database (MariaDB).
+ * A concrete implementation of {@link DynamicDatabaseService} using a SQL Database (MariaDB).
  * The class provides CRUD operations for a specific table in a SQL database.
  * The current schema outlines the columns as id, title, description, and URL.
+ * Additionally, it adds a method to retrieve column names dynamically.
  *
  * @author horris275
- * @version 25.09.2025
+ * @version 30.09.2025
  */
-public class SQLManager implements DatabaseService
+public class SQLManager implements DynamicDatabaseService
 {
     private final String table;
     private final String user;
@@ -224,6 +226,35 @@ public class SQLManager implements DatabaseService
         {
             throw new DatabaseException("An error has occurred while deleting row with id=" + id, e);
         }
+    }
+
+    /**
+     * Retrieves the column names dynamically from the database table.
+     *
+     * @return                   a list of strings that represent the column names
+     * @throws DatabaseException if a database access error occurs
+     */
+    public List<String> retrieveColumnNames()
+    {
+        String query = "SELECT * FROM " + table + " LIMIT 1";
+        List<String> columnNames = new ArrayList<>();
+
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query))
+        {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                columnNames.add(metaData.getColumnName(i));
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("An error has occurred while attempting to retrieve the column names", e);
+        }
+
+        return columnNames;
     }
 
     /**
