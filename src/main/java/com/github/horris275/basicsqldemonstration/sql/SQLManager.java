@@ -15,7 +15,7 @@ import java.util.Optional;
  * Additionally, it adds a method to retrieve column names dynamically.
  *
  * @author horris275
- * @version 30.09.2025
+ * @version 30.09.2025a
  */
 public class SQLManager implements DynamicDatabaseService
 {
@@ -58,14 +58,22 @@ public class SQLManager implements DynamicDatabaseService
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query))
         {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
             while (resultSet.next())
             {
-                int id = resultSet.getInt("id");
-                String title = resultSet.getString("title");
-                String description = resultSet.getString("description");
-                String url = resultSet.getString("url");
+                DatabaseRow databaseRow = new DatabaseRow();
 
-                databaseRows.add(new DatabaseRow(id, title, description, url));
+                for (int count = 1; count <= columnCount; count++)
+                {
+                    String columnName = metaData.getColumnName(count);
+                    Object value = resultSet.getObject(columnName);
+
+                    databaseRow.setColumn(columnName, value);
+                }
+
+                databaseRows.add(databaseRow);
             }
         }
         catch(SQLException e)
