@@ -30,7 +30,7 @@ public class DatabaseRow
      * Constructs a new {@code DatabaseRow} without any parameters.
      * Assigns the {@code columns} Map as a new {@link LinkedHashMap}
      *
-     * @param columns
+     * @param columns the initial column names and values to populate this row
      */
     public DatabaseRow(Map<String, Object> columns)
     {
