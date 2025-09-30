@@ -2,7 +2,8 @@ package com.github.horris275.basicsqldemonstration.ui.controllers;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
 import com.github.horris275.basicsqldemonstration.sql.DatabaseRow;
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.utils.UIUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,20 +11,18 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import java.sql.SQLException;
-
 /**
  * The controller class for the "Insert" tab operations in the user interface.
  *
  * <p>This controller handles the insertion of database rows when interacting
- * with the insert tab. It makes use of {@link DatabaseService} to provide functionality.</p>
+ * with the insert tab. It makes use of {@link DynamicDatabaseService} to provide functionality.</p>
  *
  * @author horris275
  * @version 17.09.2025
  */
 public class InsertTabController
 {
-    private final DatabaseService databaseService;
+    private final DynamicDatabaseService databaseService;
     @FXML private TextField titleField;
     @FXML private TextArea descriptionField;
     @FXML private TextField urlField;
@@ -33,7 +32,7 @@ public class InsertTabController
      *
      * @param databaseService the service used to insert the database rows
      */
-    public InsertTabController(DatabaseService databaseService)
+    public InsertTabController(DynamicDatabaseService databaseService)
     {
         this.databaseService = databaseService;
     }

@@ -2,7 +2,8 @@ package com.github.horris275.basicsqldemonstration.ui.controllers;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
 import com.github.horris275.basicsqldemonstration.sql.DatabaseRow;
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.utils.UIUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,14 +17,14 @@ import java.util.List;
  * The controller class for the "Display" tab operations in the user interface.
  *
  * <p>This controller handles the updating of database rows when interacting
- * with the display tab. It makes use of {@link DatabaseService} to provide functionality.</p>
+ * with the display tab. It makes use of {@link DynamicDatabaseService} to provide functionality.</p>
  *
  * @author horris275
  * @version 22.09.2025
  */
 public class DisplayTabController
 {
-    private final DatabaseService databaseService;
+    private final DynamicDatabaseService databaseService;
     @FXML private TableView<DatabaseRow> table;
 
     /**
@@ -31,14 +32,14 @@ public class DisplayTabController
      *
      * @param databaseService the service used to retrieve the database rows
      */
-    public DisplayTabController(DatabaseService databaseService)
+    public DisplayTabController(DynamicDatabaseService databaseService)
     {
         this.databaseService = databaseService;
     }
 
     /**
      * Updates the {@link TableView} with the current contents of the database.
-     * This method fetches all rows from the database using {@link DatabaseService#fetchAll()}
+     * This method fetches all rows from the database using {@link DynamicDatabaseService#fetchAll()}
      * and populates the table with an observable list of {@link DatabaseRow} objects.
      */
     public void updateTable()

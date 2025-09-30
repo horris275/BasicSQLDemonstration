@@ -1,6 +1,7 @@
 package com.github.horris275.basicsqldemonstration.ui.tabs;
 
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.ui.controllers.InsertTabController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -24,7 +25,7 @@ public class InsertTab extends Tab
      *
      * @param databaseService the service used by the tab's controller to perform insertion operations
      */
-    public InsertTab(DatabaseService databaseService)
+    public InsertTab(DynamicDatabaseService databaseService)
     {
         setText("Insert");
         setClosable(false);

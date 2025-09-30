@@ -2,7 +2,8 @@ package com.github.horris275.basicsqldemonstration.ui.controllers;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
 import com.github.horris275.basicsqldemonstration.sql.DatabaseRow;
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.utils.NumberUtils;
 import com.github.horris275.basicsqldemonstration.utils.UIUtils;
 import javafx.event.ActionEvent;
@@ -14,14 +15,14 @@ import javafx.scene.control.TextField;
  * The controller class for the "Modify" tab operations in the user interface.
  *
  * <p>This controller handles the modification of database rows when interacting
- * with the modify tab. It makes use of {@link DatabaseService} to provide functionality.</p>
+ * with the modify tab. It makes use of {@link DynamicDatabaseService} to provide functionality.</p>
  *
  * @author horris275
  * @version 23.09.2025
  */
 public class ModifyTabController
 {
-    private final DatabaseService databaseService;
+    private final DynamicDatabaseService databaseService;
     @FXML private TextField idField;
     @FXML private TextField titleField;
     @FXML private TextField descriptionField;
@@ -32,7 +33,7 @@ public class ModifyTabController
      *
      * @param databaseService the service used to modify the database rows
      */
-    public ModifyTabController(DatabaseService databaseService)
+    public ModifyTabController(DynamicDatabaseService databaseService)
     {
         this.databaseService = databaseService;
     }

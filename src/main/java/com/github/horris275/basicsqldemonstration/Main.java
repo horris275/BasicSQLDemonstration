@@ -1,7 +1,8 @@
 package com.github.horris275.basicsqldemonstration;
 
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
 import com.github.horris275.basicsqldemonstration.sql.SQLManager;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.ui.tabs.DeleteTab;
 import com.github.horris275.basicsqldemonstration.ui.tabs.DisplayTab;
 import com.github.horris275.basicsqldemonstration.ui.tabs.InsertTab;
@@ -44,7 +45,7 @@ public class Main extends Application
     @Override
     public void start(Stage stage)
     {
-        final DatabaseService databaseService = createDatabaseService();
+        final DynamicDatabaseService databaseService = createDatabaseService();
         final TabPane tabPane = createTabPane(databaseService);
 
         final Dimension resolution = Toolkit.getDefaultToolkit().getScreenSize();
@@ -63,10 +64,10 @@ public class Main extends Application
      *
      * <p>As current, it provides Display, Insert, Modify, and Delete for CRUD operations.</p>
      *
-     * @param databaseService the {@link DatabaseService} used by each tab controller
+     * @param databaseService the {@link DynamicDatabaseService} used by each tab controller
      * @return                a configured {@link TabPane} containing all tabs
      */
-    private TabPane createTabPane(DatabaseService databaseService)
+    private TabPane createTabPane(DynamicDatabaseService databaseService)
     {
         TabPane tabPane = new TabPane();
 
@@ -93,14 +94,14 @@ public class Main extends Application
     }
 
     /**
-     * Creates the {@link DatabaseService} instance for interacting with the database.
+     * Creates the {@link DynamicDatabaseService} instance for interacting with the database.
      *
      * <p>Currently, the values are hardcoded and connects to a MariaDB database.
      * This is for demonstration purposes.</p>
      *
-     * @return a {@link DatabaseService} implementation connected to the database
+     * @return a {@link DynamicDatabaseService} implementation connected to the database
      */
-    private DatabaseService createDatabaseService()
+    private DynamicDatabaseService createDatabaseService()
     {
         final String host = "localhost";
         final String port = "3306";
