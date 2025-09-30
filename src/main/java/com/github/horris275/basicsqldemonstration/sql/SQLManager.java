@@ -4,9 +4,7 @@ import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
 import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A concrete implementation of {@link DynamicDatabaseService} using a SQL Database (MariaDB).
@@ -103,23 +101,25 @@ public class SQLManager implements DynamicDatabaseService
 
             try (ResultSet resultSet = statement.executeQuery())
             {
-                if (resultSet.next())
-                {
-                    int identifier = resultSet.getInt("id");
-                    String title = resultSet.getString("title");
-                    String description = resultSet.getString("description");
-                    String url = resultSet.getString("url");
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                Map<String, Object> columns = new HashMap<>();
+                int columnCount = metaData.getColumnCount();
 
-                    return Optional.of(new DatabaseRow(identifier, title, description, url));
+                for (int count = 1; count <= columnCount; count++)
+                {
+                    String columnName = metaData.getColumnName(count);
+                    Object value = resultSet.getObject(columnName);
+
+                    columns.put(columnName, value);
                 }
+
+                return Optional.of(new DatabaseRow(columns));
             }
         }
         catch (SQLException e)
         {
             throw new DatabaseException("An error has occurred while retrieving row with id=" + id, e);
         }
-
-        return Optional.empty();
     }
 
     /**
