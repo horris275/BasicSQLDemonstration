@@ -159,29 +159,32 @@ public class SQLManager implements DynamicDatabaseService
     @Override
     public void insert(DatabaseRow databaseRow) throws DatabaseException
     {
-        String query = "INSERT INTO " + table + " (title, description, url) VALUES (?,?,?)";
+        Map<String, Object> columns = databaseRow.getColumnValues();
+        String query = createPreparedQuery("INSERT INTO " + table + " (%columns) VALUES (%placeholders)", columns);
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
         {
-            statement.setString(1, databaseRow.getTitle());
-            statement.setString(2, databaseRow.getDescription());
-            statement.setString(3, databaseRow.getUrl());
+            int count = 1;
+
+            for (String column : columns.keySet())
+            {
+                statement.setObject(count++, databaseRow.getColumn(column));
+            }
 
             statement.executeUpdate();
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys())
             {
-                if (generatedKeys.next())
+                if (generatedKeys.next() && columns.containsKey("id"))
                 {
-                    int newId = generatedKeys.getInt(1);
-                    databaseRow.setUniqueId(newId);
+                    databaseRow.setColumn("id", generatedKeys.getInt("id"));
                 }
             }
         }
         catch (SQLException e)
         {
-            throw new DatabaseException("An error has occurred while inserting data with title=" + databaseRow.getTitle(), e);
+            throw new DatabaseException("An error has occurred while inserting the selected data", e);
         }
     }
 
@@ -275,5 +278,57 @@ public class SQLManager implements DynamicDatabaseService
     private Connection getConnection() throws SQLException
     {
         return DriverManager.getConnection(databasePath, user, password);
+    }
+
+    /**
+     * Creates a prepared statement with specified columns and parameterised placeholders.
+     * The base query must contain %columns and %placeholders, of which are replaced
+     * with the actual column names and the correct number of placeholders.
+     *
+     * @param baseQuery the SQL query containing %columns and %placeholders
+     * @param columns   a map of column names to values
+     * @return          the SQL query with actual column names and placeholders inserted
+     */
+    private String createPreparedQuery(String baseQuery, Map<String, Object> columns)
+    {
+        String columnNames = toQueryColumns(columns.keySet());
+        String placeholders = toQueryPlaceholders(columns.size());
+
+        return baseQuery.replace("%columns", columnNames)
+                .replace("%placeholders", placeholders);
+    }
+
+    /**
+     * Converts a set of column names into a comma-separated string.
+     *
+     * @param columnNames the set of column names to join
+     * @return            a comma-separated string of column names
+     */
+    private String toQueryColumns(Set<String> columnNames)
+    {
+        return String.join(",", columnNames);
+    }
+
+    /**
+     * Generates a comma-separated string of parameter placeholders.
+     *
+     * @param columnCount the number of placeholders to generate
+     * @return            a string representing the placeholders
+     */
+    private String toQueryPlaceholders(int columnCount)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        for (int count = 1; count <= columnCount; count ++)
+        {
+            builder.append("?");
+
+            if (count < columnCount)
+            {
+                builder.append(",");
+            }
+        }
+
+        return builder.toString();
     }
 }
