@@ -26,30 +26,8 @@
         </VBox>
         <!-- Table -->
         <VBox id="table-container">
-            <TableView fx:id="table">
-                <columns>
-                    <TableColumn id="id-column" text="Identifier">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="uniqueId"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn id="title-column" text="Title">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="title"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn id="description-column" text="Description">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="description"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn id="url-column" text="URL">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="url"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                </columns>
-            </TableView>
+            <!-- Table is now modified within the DisplayTabController -->
+            <TableView fx:id="table"/>
         </VBox>
     </VBox>
 </StackPane>
