@@ -67,7 +67,6 @@ public class SQLManager implements DynamicDatabaseService
                 {
                     String columnName = metaData.getColumnName(count);
                     Object value = resultSet.getObject(columnName);
-
                     databaseRow.setColumn(columnName, value);
                 }
 
@@ -198,15 +197,23 @@ public class SQLManager implements DynamicDatabaseService
     @Override
     public void modify(int id, DatabaseRow databaseRow) throws DatabaseException
     {
-        String query = "UPDATE " + table + " SET title = ?, description = ?, url = ? WHERE id = ?";
+        Map<String, Object> columns = databaseRow.getColumnValues();
+        String query = createPreparedModifyQuery("UPDATE " + table + " SET %statement WHERE id = ?", columns);
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setString(1, databaseRow.getTitle());
-            statement.setString(2, databaseRow.getDescription());
-            statement.setString(3, databaseRow.getUrl());
-            statement.setInt(4, id);
+            int count = 1;
+
+            for (String column : columns.keySet())
+            {
+                statement.setObject(count++, databaseRow.getColumn(column));
+            }
+
+            if (query.contains("WHERE"))
+            {
+                statement.setInt(4, id);
+            }
 
             statement.executeUpdate();
         }
@@ -298,6 +305,18 @@ public class SQLManager implements DynamicDatabaseService
                 .replace("%placeholders", placeholders);
     }
 
+    private String createPreparedModifyQuery(String baseQuery, Map<String, Object> columns)
+    {
+        String modifyStatement = toModifyStatement(columns.keySet());
+
+        if (!columns.containsKey("id"))
+        {
+            modifyStatement = modifyStatement.replace(" WHERE id = ?", "");
+        }
+
+        return baseQuery.replace("%statement", modifyStatement);
+    }
+
     /**
      * Converts a set of column names into a comma-separated string.
      *
@@ -326,6 +345,37 @@ public class SQLManager implements DynamicDatabaseService
             if (count < columnCount)
             {
                 builder.append(",");
+            }
+        }
+
+        return builder.toString();
+    }
+
+    /**
+     *
+     *
+     * @param columnNames
+     * @return
+     */
+    private String toModifyStatement(Set<String> columnNames)
+    {
+        StringBuilder builder = new StringBuilder();
+        int count = 1;
+        int columnCount = columnNames.size();
+
+        for (String columnName : columnNames)
+        {
+            if (columnName.equals("id"))
+            {
+                count++;
+                continue;
+            }
+
+            builder.append(columnName).append(" = ?");
+
+            if (count++ < columnCount)
+            {
+                builder.append(", ");
             }
         }
 
