@@ -2,7 +2,6 @@ package com.github.horris275.basicsqldemonstration.ui.controllers;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
 import com.github.horris275.basicsqldemonstration.sql.DatabaseRow;
-import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
 import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.utils.NumberUtils;
 import com.github.horris275.basicsqldemonstration.utils.UIUtils;
@@ -18,7 +17,7 @@ import javafx.scene.control.TextField;
  * with the modify tab. It makes use of {@link DynamicDatabaseService} to provide functionality.</p>
  *
  * @author horris275
- * @version 23.09.2025
+ * @version 01.10.2025
  */
 public class ModifyTabController
 {
@@ -99,7 +98,7 @@ public class ModifyTabController
         {
             DatabaseRow databaseRow = new DatabaseRow();
 
-            databaseRow.setColumn("id", identifier);
+            databaseRow.setUniqueId(identifier);
             databaseRow.setColumn("title", title);
             databaseRow.setColumn("description", description);
             databaseRow.setColumn("url", url);
