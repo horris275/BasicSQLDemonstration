@@ -316,6 +316,15 @@ public class SQLManager implements DynamicDatabaseService
                 .replace("%placeholders", placeholders);
     }
 
+    /**
+     * Creates a prepared statement that dynamically populates the column names from a table.
+     * The base query must contain %statement, of which is replaced with the actual column names
+     * and associated parameterised placeholders.
+     *
+     * @param baseQuery the SQL query containing %statement
+     * @param columns   a map of column names and values
+     * @return          the SQL query with actual column names and parameterised values
+     */
     private String createPreparedModifyQuery(String baseQuery, Map<String, Object> columns)
     {
         String modifyStatement = toModifyStatement(columns.keySet());
@@ -363,10 +372,10 @@ public class SQLManager implements DynamicDatabaseService
     }
 
     /**
+     * Generates an SQL update assignment statement to be used within {@code modify}.
      *
-     *
-     * @param columnNames
-     * @return
+     * @param columnNames the set of column names to use
+     * @return            a string representing the SQL update assignment statement
      */
     private String toModifyStatement(Set<String> columnNames)
     {
