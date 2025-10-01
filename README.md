@@ -8,9 +8,10 @@ The project is complete in that it:
 * Modify existing data in the database table
 * Delete existing data in the database table
 * Database creation script to create the table whilst dropping the original if it exists
+* The displaying of data and SQL Manager is now dynamic. Work can still be done here and the insertion and modification tabs are still static. 
 ### Potential updates:
 * Create a properties file to load database configuration settings from
-* Create a dynamic system to automatically gather column names, reducing hardcoded reliance on specific columns
+* ~~Create a dynamic system to automatically gather column names, reducing hardcoded reliance on specific columns~~
 * Add additional validation techniques to verify data is correct (i.e., does the length of the String match the database schema)
 * Add a logging system that logs data to a file in how the database is operating
 * Improve the user interface to be more stylish

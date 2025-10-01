@@ -1,21 +1,21 @@
 package com.github.horris275.basicsqldemonstration.sql;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * A concrete implementation of {@link DatabaseService} using a SQL Database (MariaDB).
+ * A concrete implementation of {@link DynamicDatabaseService} using a SQL Database (MariaDB).
  * The class provides CRUD operations for a specific table in a SQL database.
  * The current schema outlines the columns as id, title, description, and URL.
+ * Additionally, it adds a method to retrieve column names dynamically.
  *
  * @author horris275
- * @version 25.09.2025
+ * @version 01.10.2025a
  */
-public class SQLManager implements DatabaseService
+public class SQLManager implements DynamicDatabaseService
 {
     private final String table;
     private final String user;
@@ -56,14 +56,21 @@ public class SQLManager implements DatabaseService
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query))
         {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
             while (resultSet.next())
             {
-                int id = resultSet.getInt("id");
-                String title = resultSet.getString("title");
-                String description = resultSet.getString("description");
-                String url = resultSet.getString("url");
+                DatabaseRow databaseRow = new DatabaseRow();
 
-                databaseRows.add(new DatabaseRow(id, title, description, url));
+                for (int count = 1; count <= columnCount; count++)
+                {
+                    String columnName = metaData.getColumnName(count);
+                    Object value = resultSet.getObject(columnName);
+                    databaseRow.setColumn(columnName, value);
+                }
+
+                databaseRows.add(databaseRow);
             }
         }
         catch(SQLException e)
@@ -93,23 +100,36 @@ public class SQLManager implements DatabaseService
 
             try (ResultSet resultSet = statement.executeQuery())
             {
-                if (resultSet.next())
+                if (!resultSet.next())
                 {
-                    int identifier = resultSet.getInt("id");
-                    String title = resultSet.getString("title");
-                    String description = resultSet.getString("description");
-                    String url = resultSet.getString("url");
-
-                    return Optional.of(new DatabaseRow(identifier, title, description, url));
+                    return Optional.empty();
                 }
+
+                DatabaseRow databaseRow = new DatabaseRow();
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                for (int count = 1; count <= columnCount; count++)
+                {
+                    String columnName = metaData.getColumnName(count);
+
+                    if (columnName.equalsIgnoreCase("ID"))
+                    {
+                        continue;
+                    }
+
+                    databaseRow.setColumn(columnName, resultSet.getObject(columnName));
+                }
+
+                databaseRow.setUniqueId(id);
+
+                return Optional.of(databaseRow);
             }
         }
         catch (SQLException e)
         {
             throw new DatabaseException("An error has occurred while retrieving row with id=" + id, e);
         }
-
-        return Optional.empty();
     }
 
     /**
@@ -149,29 +169,32 @@ public class SQLManager implements DatabaseService
     @Override
     public void insert(DatabaseRow databaseRow) throws DatabaseException
     {
-        String query = "INSERT INTO " + table + " (title, description, url) VALUES (?,?,?)";
+        Map<String, Object> columns = databaseRow.getColumnValues();
+        String query = createPreparedQuery("INSERT INTO " + table + " (%columns) VALUES (%placeholders)", columns);
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
         {
-            statement.setString(1, databaseRow.getTitle());
-            statement.setString(2, databaseRow.getDescription());
-            statement.setString(3, databaseRow.getUrl());
+            int count = 1;
+
+            for (String column : columns.keySet())
+            {
+                statement.setObject(count++, databaseRow.getColumn(column));
+            }
 
             statement.executeUpdate();
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys())
             {
-                if (generatedKeys.next())
+                if (generatedKeys.next() && columns.containsKey("id"))
                 {
-                    int newId = generatedKeys.getInt(1);
-                    databaseRow.setUniqueId(newId);
+                    databaseRow.setUniqueId(generatedKeys.getInt("id"));
                 }
             }
         }
         catch (SQLException e)
         {
-            throw new DatabaseException("An error has occurred while inserting data with title=" + databaseRow.getTitle(), e);
+            throw new DatabaseException("An error has occurred while inserting the selected data", e);
         }
     }
 
@@ -185,15 +208,23 @@ public class SQLManager implements DatabaseService
     @Override
     public void modify(int id, DatabaseRow databaseRow) throws DatabaseException
     {
-        String query = "UPDATE " + table + " SET title = ?, description = ?, url = ? WHERE id = ?";
+        Map<String, Object> columns = databaseRow.getColumnValues();
+        String query = createPreparedModifyQuery("UPDATE " + table + " SET %statement WHERE id = ?", columns);
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setString(1, databaseRow.getTitle());
-            statement.setString(2, databaseRow.getDescription());
-            statement.setString(3, databaseRow.getUrl());
-            statement.setInt(4, id);
+            int count = 1;
+
+            for (String column : columns.keySet())
+            {
+                statement.setObject(count++, databaseRow.getColumn(column));
+            }
+
+            if (query.contains("WHERE"))
+            {
+                statement.setInt(4, id);
+            }
 
             statement.executeUpdate();
         }
@@ -227,6 +258,36 @@ public class SQLManager implements DatabaseService
     }
 
     /**
+     * Retrieves the column names dynamically from the database table.
+     *
+     * @return                   a list of strings that represent the column names
+     * @throws DatabaseException if a database access error occurs
+     */
+    public List<String> retrieveColumnNames()
+    {
+        String query = "SELECT * FROM " + table + " LIMIT 1";
+        List<String> columnNames = new ArrayList<>();
+
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query))
+        {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            for (int count = 1; count <= metaData.getColumnCount(); count++)
+            {
+                columnNames.add(metaData.getColumnName(count));
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new DatabaseException("An error has occurred while attempting to retrieve the column names", e);
+        }
+
+        return columnNames;
+    }
+
+    /**
      * Creates and returns a new connection to the database.
      *
      * @return              a {@link Connection} object representing a connection to the database
@@ -235,5 +296,109 @@ public class SQLManager implements DatabaseService
     private Connection getConnection() throws SQLException
     {
         return DriverManager.getConnection(databasePath, user, password);
+    }
+
+    /**
+     * Creates a prepared statement with specified columns and parameterised placeholders.
+     * The base query must contain %columns and %placeholders, of which are replaced
+     * with the actual column names and the correct number of placeholders.
+     *
+     * @param baseQuery the SQL query containing %columns and %placeholders
+     * @param columns   a map of column names to values
+     * @return          the SQL query with actual column names and placeholders inserted
+     */
+    private String createPreparedQuery(String baseQuery, Map<String, Object> columns)
+    {
+        String columnNames = toQueryColumns(columns.keySet());
+        String placeholders = toQueryPlaceholders(columns.size());
+
+        return baseQuery.replace("%columns", columnNames)
+                .replace("%placeholders", placeholders);
+    }
+
+    /**
+     * Creates a prepared statement that dynamically populates the column names from a table.
+     * The base query must contain %statement, of which is replaced with the actual column names
+     * and associated parameterised placeholders.
+     *
+     * @param baseQuery the SQL query containing %statement
+     * @param columns   a map of column names and values
+     * @return          the SQL query with actual column names and parameterised values
+     */
+    private String createPreparedModifyQuery(String baseQuery, Map<String, Object> columns)
+    {
+        String modifyStatement = toModifyStatement(columns.keySet());
+
+        if (!columns.containsKey("id"))
+        {
+            modifyStatement = modifyStatement.replace(" WHERE id = ?", "");
+        }
+
+        return baseQuery.replace("%statement", modifyStatement);
+    }
+
+    /**
+     * Converts a set of column names into a comma-separated string.
+     *
+     * @param columnNames the set of column names to join
+     * @return            a comma-separated string of column names
+     */
+    private String toQueryColumns(Set<String> columnNames)
+    {
+        return String.join(", ", columnNames);
+    }
+
+    /**
+     * Generates a comma-separated string of parameter placeholders.
+     *
+     * @param columnCount the number of placeholders to generate
+     * @return            a string representing the placeholders
+     */
+    private String toQueryPlaceholders(int columnCount)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        for (int count = 1; count <= columnCount; count ++)
+        {
+            builder.append("?");
+
+            if (count < columnCount)
+            {
+                builder.append(", ");
+            }
+        }
+
+        return builder.toString();
+    }
+
+    /**
+     * Generates an SQL update assignment statement to be used within {@code modify}.
+     *
+     * @param columnNames the set of column names to use
+     * @return            a string representing the SQL update assignment statement
+     */
+    private String toModifyStatement(Set<String> columnNames)
+    {
+        StringBuilder builder = new StringBuilder();
+        int count = 1;
+        int columnCount = columnNames.size();
+
+        for (String columnName : columnNames)
+        {
+            if (columnName.equals("id"))
+            {
+                count++;
+                continue;
+            }
+
+            builder.append(columnName).append(" = ?");
+
+            if (count++ < columnCount)
+            {
+                builder.append(", ");
+            }
+        }
+
+        return builder.toString();
     }
 }

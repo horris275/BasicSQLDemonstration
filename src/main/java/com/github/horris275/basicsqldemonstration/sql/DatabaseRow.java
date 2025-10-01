@@ -1,38 +1,45 @@
 package com.github.horris275.basicsqldemonstration.sql;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Represents a row in the database with a unique identifier,
- * title, description, and URL.
+ * This class represents a row in a database table.
  *
- * <p>A {@code uniqueId} of {@code -1} indicates that the row
- * has not yet been assigned a persistent identifier by the database.
- * Once created, the database will update the value to reflect the identifier.</p>
+ * <p>It contains a {@link LinkedHashMap} which represents the column
+ * name and the associated data. The unique identifier (if required) is controlled
+ * by a separate field {@code uniqueId} and must not be used within the LinkedHashMap.</p>
  *
  * @author horris275
- * @version 22.09.2025
+ * @version 01.10.2025
  */
 public class DatabaseRow
 {
+    private final Map<String, Object> columns;
     private int uniqueId;
-    private final String title;
-    private final String description;
-    private final String url;
 
     /**
-     * Constructs a new {@code DatabaseRow} with the unique identifier,
-     * title, description, and URL.
-     *
-     * @param uniqueId    an integer representing the unique identifier
-     * @param title       the title of the database row
-     * @param description the description of the database row
-     * @param url         the url of the database row
+     * Constructs a new {@code DatabaseRow} without any parameters.
+     * Initialises the {@code columns} field as an empty {@link LinkedHashMap}
      */
-    public DatabaseRow(int uniqueId, String title, String description, String url)
+    public DatabaseRow()
     {
+        this(-1, new LinkedHashMap<>());
+    }
+
+    /**
+     * Constructs a new {@code DatabaseRow} with a predefined column data.
+     * Assigns the {@code columns} Map as a new {@link LinkedHashMap}
+     *
+     * @param uniqueId an integer representing the unique identifier
+     * @param columns  the initial column names and values to populate this row
+     */
+    public DatabaseRow(int uniqueId, Map<String, Object> columns)
+    {
+        this.columns = new LinkedHashMap<>(columns);
         this.uniqueId = uniqueId;
-        this.title = title;
-        this.description = description;
-        this.url = url;
     }
 
     /**
@@ -55,39 +62,51 @@ public class DatabaseRow
      */
     public void setUniqueId(int newId)
     {
-        if (this.uniqueId == -1)
+        if (uniqueId == -1)
         {
-            this.uniqueId = newId;
+            uniqueId = newId;
         }
     }
 
     /**
-     * Returns the title of this database row.
+     * Returns the value of the given column.
      *
-     * @return the title
+     * @param columnName the name of the column to return
+     * @return           the value of the column, or null if not present
      */
-    public String getTitle()
+    public Object getColumn(String columnName)
     {
-        return title;
+        return columns.get(columnName);
     }
 
     /**
-     * Returns the description of this database row.
+     * Sets a new column name and associated value in this database row.
      *
-     * @return the description
+     * @param columnName the name of the column to insert
+     * @param value      the value associated with the column
      */
-    public String getDescription()
+    public void setColumn(String columnName, Object value)
     {
-        return description;
+        columns.put(columnName, value);
     }
 
     /**
-     * Returns the URL of this database row.
+     * Returns an unmodifiable list of the column names.
      *
-     * @return the URL
+     * @return the unmodifiable list of column names
      */
-    public String getUrl()
+    public List<String> getColumnNames()
     {
-        return url;
+        return List.copyOf(columns.keySet());
+    }
+
+    /**
+     * Returns an unmodifiable {@link Map} of column names and values.
+     *
+     * @return the unmodifiable {@link Map} of column names and values
+     */
+    public Map<String, Object> getColumnValues()
+    {
+        return Collections.unmodifiableMap(columns);
     }
 }

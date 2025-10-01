@@ -1,6 +1,7 @@
 package com.github.horris275.basicsqldemonstration.ui.tabs;
 
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.ui.controllers.DeleteTabController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -24,7 +25,7 @@ public class DeleteTab extends Tab
      *
      * @param databaseService the service used by the tab's controller to perform deletion operations
      */
-    public DeleteTab(DatabaseService databaseService)
+    public DeleteTab(DynamicDatabaseService databaseService)
     {
         setText("Delete");
         setClosable(false);

@@ -1,6 +1,7 @@
 package com.github.horris275.basicsqldemonstration.ui.tabs;
 
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.ui.controllers.ModifyTabController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -25,7 +26,7 @@ public class ModifyTab extends Tab
      *
      * @param databaseService the service used by the tab's controller to perform modification operations
      */
-    public ModifyTab(DatabaseService databaseService)
+    public ModifyTab(DynamicDatabaseService databaseService)
     {
         setText("Modify");
         setClosable(false);

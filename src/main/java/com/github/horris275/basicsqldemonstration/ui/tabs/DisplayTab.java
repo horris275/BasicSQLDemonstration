@@ -1,7 +1,7 @@
 package com.github.horris275.basicsqldemonstration.ui.tabs;
 
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
-import com.github.horris275.basicsqldemonstration.ui.controllers.DeleteTabController;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.ui.controllers.DisplayTabController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
@@ -27,7 +27,7 @@ public class DisplayTab extends Tab
      *
      * @param databaseService the service used by the tab's controller to perform display operations
      */
-    public DisplayTab(DatabaseService databaseService)
+    public DisplayTab(DynamicDatabaseService databaseService)
     {
         setText("Display");
         setClosable(false);

@@ -1,7 +1,8 @@
 package com.github.horris275.basicsqldemonstration.ui.controllers;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
-import com.github.horris275.basicsqldemonstration.sql.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
+import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.utils.NumberUtils;
 import com.github.horris275.basicsqldemonstration.utils.UIUtils;
 import javafx.event.ActionEvent;
@@ -13,7 +14,7 @@ import javafx.scene.control.TextField;
  * The controller class for the "Delete" tab operations in the user interface.
  *
  * <p>This controller handles the deletion of database rows based on
- * a user-provided unique identifier. It makes use of {@link DatabaseService}
+ * a user-provided unique identifier. It makes use of {@link DynamicDatabaseService}
  * to provide this functionality.</p>
  *
  * @author horris275
@@ -21,7 +22,7 @@ import javafx.scene.control.TextField;
  */
 public class DeleteTabController
 {
-    private final DatabaseService databaseService;
+    private final DynamicDatabaseService databaseService;
     @FXML private TextField idField;
 
     /**
@@ -29,7 +30,7 @@ public class DeleteTabController
      *
      * @param databaseService the service used to access and modify the database
      */
-    public DeleteTabController(DatabaseService databaseService)
+    public DeleteTabController(DynamicDatabaseService databaseService)
     {
         this.databaseService = databaseService;
     }

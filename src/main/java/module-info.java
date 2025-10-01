@@ -11,4 +11,5 @@ module com.github.horris275.basicsqldemonstration {
     opens com.github.horris275.basicsqldemonstration.ui.controllers to javafx.fxml;
 
     exports com.github.horris275.basicsqldemonstration;
+    opens com.github.horris275.basicsqldemonstration.sql.interfaces to javafx.base;
 }
