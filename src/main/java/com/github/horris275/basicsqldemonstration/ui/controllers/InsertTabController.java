@@ -2,7 +2,6 @@ package com.github.horris275.basicsqldemonstration.ui.controllers;
 
 import com.github.horris275.basicsqldemonstration.exceptions.DatabaseException;
 import com.github.horris275.basicsqldemonstration.sql.DatabaseRow;
-import com.github.horris275.basicsqldemonstration.sql.interfaces.DatabaseService;
 import com.github.horris275.basicsqldemonstration.sql.interfaces.DynamicDatabaseService;
 import com.github.horris275.basicsqldemonstration.utils.UIUtils;
 import javafx.event.ActionEvent;
@@ -57,7 +56,14 @@ public class InsertTabController
 
         try
         {
-            databaseService.insert(new DatabaseRow(-1, title, description, url));
+            DatabaseRow databaseRow = new DatabaseRow();
+
+            databaseRow.setColumn("id", -1);
+            databaseRow.setColumn("title", title);
+            databaseRow.setColumn("description", description);
+            databaseRow.setColumn("url", url);
+
+            databaseService.insert(databaseRow);
             resetFields();
             UIUtils.alert("Data has successfully been inserted into the database!", Alert.AlertType.INFORMATION);
         }
