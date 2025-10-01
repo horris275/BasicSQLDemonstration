@@ -13,7 +13,7 @@ import java.util.*;
  * Additionally, it adds a method to retrieve column names dynamically.
  *
  * @author horris275
- * @version 01.10.2025
+ * @version 01.10.2025a
  */
 public class SQLManager implements DynamicDatabaseService
 {
@@ -100,19 +100,30 @@ public class SQLManager implements DynamicDatabaseService
 
             try (ResultSet resultSet = statement.executeQuery())
             {
+                if (!resultSet.next())
+                {
+                    return Optional.empty();
+                }
+
+                DatabaseRow databaseRow = new DatabaseRow();
                 ResultSetMetaData metaData = resultSet.getMetaData();
-                Map<String, Object> columns = new HashMap<>();
                 int columnCount = metaData.getColumnCount();
 
                 for (int count = 1; count <= columnCount; count++)
                 {
                     String columnName = metaData.getColumnName(count);
-                    Object value = resultSet.getObject(columnName);
 
-                    columns.put(columnName, value);
+                    if (columnName.equalsIgnoreCase("ID"))
+                    {
+                        continue;
+                    }
+
+                    databaseRow.setColumn(columnName, resultSet.getObject(columnName));
                 }
 
-                return Optional.of(new DatabaseRow(id, columns));
+                databaseRow.setUniqueId(id);
+
+                return Optional.of(databaseRow);
             }
         }
         catch (SQLException e)
