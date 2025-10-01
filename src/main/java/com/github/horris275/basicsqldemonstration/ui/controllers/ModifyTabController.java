@@ -60,10 +60,14 @@ public class ModifyTabController
         try
         {
             databaseService.fetch(identifier).ifPresentOrElse(row -> {
+                String title = (String) row.getColumn("title");
+                String description = (String) row.getColumn("description");
+                String url = (String) row.getColumn("url");
+
                 idField.setEditable(false);
-                titleField.setText(row.getTitle());
-                descriptionField.setText(row.getDescription());
-                urlField.setText(row.getUrl());
+                titleField.setText(title);
+                descriptionField.setText(description);
+                urlField.setText(url);
             }, () -> UIUtils.alert("Unable to obtain the desired database row", Alert.AlertType.ERROR));
         }
         catch (DatabaseException e)
@@ -93,7 +97,14 @@ public class ModifyTabController
 
         try
         {
-            databaseService.modify(identifier, new DatabaseRow(identifier, title, description, url));
+            DatabaseRow databaseRow = new DatabaseRow();
+
+            databaseRow.setColumn("id", identifier);
+            databaseRow.setColumn("title", title);
+            databaseRow.setColumn("description", description);
+            databaseRow.setColumn("url", url);
+
+            databaseService.modify(identifier, databaseRow);
             idField.setEditable(true);
             resetFields();
             UIUtils.alert("The data row has successfully been updated!", Alert.AlertType.INFORMATION);
