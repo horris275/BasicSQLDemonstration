@@ -17,7 +17,7 @@ import javafx.scene.control.TextField;
  * with the insert tab. It makes use of {@link DynamicDatabaseService} to provide functionality.</p>
  *
  * @author horris275
- * @version 17.09.2025
+ * @version 01.10.2025
  */
 public class InsertTabController
 {
@@ -58,7 +58,6 @@ public class InsertTabController
         {
             DatabaseRow databaseRow = new DatabaseRow();
 
-            databaseRow.setColumn("id", -1);
             databaseRow.setColumn("title", title);
             databaseRow.setColumn("description", description);
             databaseRow.setColumn("url", url);
