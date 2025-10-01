@@ -27,7 +27,7 @@ public class DatabaseRow
     }
 
     /**
-     * Constructs a new {@code DatabaseRow} without any parameters.
+     * Constructs a new {@code DatabaseRow} with a predefined column data.
      * Assigns the {@code columns} Map as a new {@link LinkedHashMap}
      *
      * @param columns the initial column names and values to populate this row
@@ -79,43 +79,3 @@ public class DatabaseRow
         return Collections.unmodifiableMap(columns);
     }
 }
-
-/*
-class OldDatabaseRow
-{
-    public OldDatabaseRow(int uniqueId, String title, String description, String url)
-    {
-        this.uniqueId = uniqueId;
-        this.title = title;
-        this.description = description;
-        this.url = url;
-    }
-
-    public int getUniqueId()
-    {
-        return uniqueId;
-    }
-
-    public void setUniqueId(int newId)
-    {
-        if (this.uniqueId == -1)
-        {
-            this.uniqueId = newId;
-        }
-    }
-
-    public String getTitle()
-    {
-        return title;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public String getUrl()
-    {
-        return url;
-    }
-}*/
