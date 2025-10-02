@@ -13,7 +13,7 @@ import java.util.*;
  * Additionally, it adds a method to retrieve column names dynamically.
  *
  * @author horris275
- * @version 01.10.2025a
+ * @version 02.10.2025
  */
 public class SQLManager implements DynamicDatabaseService
 {
@@ -67,7 +67,16 @@ public class SQLManager implements DynamicDatabaseService
                 {
                     String columnName = metaData.getColumnName(count);
                     Object value = resultSet.getObject(columnName);
-                    databaseRow.setColumn(columnName, value);
+
+                    if (columnName.equalsIgnoreCase("ID"))
+                    {
+                        int identifier = resultSet.getInt(columnName);
+                        databaseRow.setUniqueId(identifier);
+                    }
+                    else
+                    {
+                        databaseRow.setColumn(columnName, value);
+                    }
                 }
 
                 databaseRows.add(databaseRow);
@@ -221,10 +230,7 @@ public class SQLManager implements DynamicDatabaseService
                 statement.setObject(count++, databaseRow.getColumn(column));
             }
 
-            if (query.contains("WHERE"))
-            {
-                statement.setInt(4, id);
-            }
+            statement.setInt(count, id);
 
             statement.executeUpdate();
         }
@@ -328,12 +334,6 @@ public class SQLManager implements DynamicDatabaseService
     private String createPreparedModifyQuery(String baseQuery, Map<String, Object> columns)
     {
         String modifyStatement = toModifyStatement(columns.keySet());
-
-        if (!columns.containsKey("id"))
-        {
-            modifyStatement = modifyStatement.replace(" WHERE id = ?", "");
-        }
-
         return baseQuery.replace("%statement", modifyStatement);
     }
 

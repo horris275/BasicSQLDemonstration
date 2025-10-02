@@ -53,8 +53,17 @@ public class DisplayTabController
 
             tableColumn.setCellValueFactory(cellData -> {
                 DatabaseRow row = cellData.getValue();
-                Object value = row.getColumn(columnName);
-                return new SimpleStringProperty(value != null ? value.toString() : "");
+
+                if (columnName.equalsIgnoreCase("ID"))
+                {
+                    int value = row.getUniqueId();
+                    return new SimpleStringProperty(String.valueOf(value));
+                }
+                else
+                {
+                    Object value = row.getColumn(columnName);
+                    return new SimpleStringProperty(value != null ? value.toString() : "");
+                }
             });
 
             table.getColumns().add(tableColumn);
