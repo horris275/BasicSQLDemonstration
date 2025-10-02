@@ -325,12 +325,6 @@ public class SQLManager implements DynamicDatabaseService
     private String createPreparedModifyQuery(String baseQuery, Map<String, Object> columns)
     {
         String modifyStatement = toModifyStatement(columns.keySet());
-
-        if (!columns.containsKey("id"))
-        {
-            modifyStatement = modifyStatement.replace(" WHERE id = ?", "");
-        }
-
         return baseQuery.replace("%statement", modifyStatement);
     }
 
