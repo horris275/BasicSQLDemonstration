@@ -13,7 +13,7 @@ import java.util.*;
  * Additionally, it adds a method to retrieve column names dynamically.
  *
  * @author horris275
- * @version 01.10.2025a
+ * @version 02.10.2025
  */
 public class SQLManager implements DynamicDatabaseService
 {
@@ -221,10 +221,7 @@ public class SQLManager implements DynamicDatabaseService
                 statement.setObject(count++, databaseRow.getColumn(column));
             }
 
-            if (query.contains("WHERE"))
-            {
-                statement.setInt(4, id);
-            }
+            statement.setInt(count, id);
 
             statement.executeUpdate();
         }
