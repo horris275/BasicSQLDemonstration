@@ -67,7 +67,16 @@ public class SQLManager implements DynamicDatabaseService
                 {
                     String columnName = metaData.getColumnName(count);
                     Object value = resultSet.getObject(columnName);
-                    databaseRow.setColumn(columnName, value);
+
+                    if (columnName.equalsIgnoreCase("ID"))
+                    {
+                        int identifier = resultSet.getInt(columnName);
+                        databaseRow.setUniqueId(identifier);
+                    }
+                    else
+                    {
+                        databaseRow.setColumn(columnName, value);
+                    }
                 }
 
                 databaseRows.add(databaseRow);
