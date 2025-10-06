@@ -17,6 +17,7 @@ import java.util.Map;
  */
 public class DatabaseRow
 {
+    private static final int DEFAULT_IDENTIFIER = -1;
     private final Map<String, Object> columns;
     private int uniqueId;
 
@@ -26,7 +27,7 @@ public class DatabaseRow
      */
     public DatabaseRow()
     {
-        this(-1, new LinkedHashMap<>());
+        this(DEFAULT_IDENTIFIER, new LinkedHashMap<>());
     }
 
     /**
@@ -38,8 +39,8 @@ public class DatabaseRow
      */
     public DatabaseRow(int uniqueId, Map<String, Object> columns)
     {
-        this.columns = new LinkedHashMap<>(columns);
         this.uniqueId = uniqueId;
+        this.columns = new LinkedHashMap<>(columns);
     }
 
     /**
@@ -62,7 +63,7 @@ public class DatabaseRow
      */
     public void setUniqueId(int newId)
     {
-        if (uniqueId == -1)
+        if (uniqueId == DEFAULT_IDENTIFIER)
         {
             uniqueId = newId;
         }
